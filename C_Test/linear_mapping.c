@@ -46,13 +46,13 @@ double linear_mapping(double x, struct CalibrationData cal_data)
 int main()
 {
     cal_data = {
-        {0.0, 1.0, 2.0, 3.0, 4.0},
-        {-30.0, -15.0, 0.0, 15.0, 30.0}  // y °ª
+        {1.0, 2.0, 3.0, 4.0, 5.0},
+        {0.0, 10.0, 20.0, 30.0, 40.0} 
     };
 
     double x = 2.0;
-    double mapped_value = linear_mapping(x, cal_data);
-    printf("Mapped value: %.2f\n", mapped_value);
+    double Value = linear_mapping(x, cal_data);
+    printf("Value: %f\n", Value);
 
     return 0;
 }
