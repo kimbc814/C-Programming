@@ -7,7 +7,7 @@
 #define RAD2DEG(x)   x*180/M_PI
 #define DEG2RAD(x)   x/180*M_PI
 
-typedef struct 
+typedef struct
 {
 	double x;
 	double y;
@@ -17,83 +17,80 @@ typedef struct
 typedef struct
 {
 	double x;
-	double y;	
+	double y;
 } Point2D;
 
 Pose2D    base_link_origin;
 Point2D   base_link_Point2D, base_link_map_Point2D;
 
-double angle_degree;
-double angle_radian;
-double Rotation_matrix[2][2];
-double Rotation_matrix_inverse[2][2];
+double g_angle_degree;
+double g_angle_radian;
+double g_Rotation_matrix[2][2];
+double g_Rotation_matrix_inverse[2][2];
 
-void set_rotation_matrix(double m_angle_degree)
+void Set_rotation_matrix(double m_angle_degree)
 {
-	angle_radian = DEG2RAD(m_angle_degree);
+	g_angle_radian = DEG2RAD(m_angle_degree);
 
-	Rotation_matrix[0][0] = cos(angle_radian);   Rotation_matrix[0][1] = -sin(angle_radian);
-	Rotation_matrix[1][0] = sin(angle_radian);   Rotation_matrix[1][1] = cos(angle_radian);
+	g_Rotation_matrix[0][0] = cos(g_angle_radian);   g_Rotation_matrix[0][1] = -sin(g_angle_radian);
+	g_Rotation_matrix[1][0] = sin(g_angle_radian);   g_Rotation_matrix[1][1] = cos(g_angle_radian);
 
 	printf("Set Rotation : ");
 	printf("\n");
-	printf("%6.3lf  %6.3lf\n", Rotation_matrix[0][0], Rotation_matrix[0][1]);
-	printf("%6.3lf  %6.3lf\n", Rotation_matrix[1][0], Rotation_matrix[1][1]);
+	printf("%6.3lf  %6.3lf\n", g_Rotation_matrix[0][0], g_Rotation_matrix[0][1]);
+	printf("%6.3lf  %6.3lf\n", g_Rotation_matrix[1][0], g_Rotation_matrix[1][1]);
 }
 
-void set_rotation_matrix_inverse(double m_angle_degree)
+void Set_rotation_matrix_inverse(double m_angle_degree)
 {
-	angle_radian = DEG2RAD(m_angle_degree);
+	g_angle_radian = DEG2RAD(m_angle_degree);
 
-	Rotation_matrix_inverse[0][0] = cos(angle_radian);   Rotation_matrix_inverse[0][1] = sin(angle_radian);
-	Rotation_matrix_inverse[1][0] = -sin(angle_radian);  Rotation_matrix_inverse[1][1] = cos(angle_radian);
+	g_Rotation_matrix_inverse[0][0] = cos(g_angle_radian);   g_Rotation_matrix_inverse[0][1] = sin(g_angle_radian);
+	g_Rotation_matrix_inverse[1][0] = -sin(g_angle_radian);  g_Rotation_matrix_inverse[1][1] = cos(g_angle_radian);
 
 	printf("Set Rotation_Inverse : ");
 	printf("\n");
-	printf("%6.3lf  %6.3lf\n", Rotation_matrix_inverse[0][0], Rotation_matrix_inverse[0][1]);
-	printf("%6.3lf  %6.3lf\n", Rotation_matrix_inverse[1][0], Rotation_matrix_inverse[1][1]);
+	printf("%6.3lf  %6.3lf\n", g_Rotation_matrix_inverse[0][0], g_Rotation_matrix_inverse[0][1]);
+	printf("%6.3lf  %6.3lf\n", g_Rotation_matrix_inverse[1][0], g_Rotation_matrix_inverse[1][1]);
 }
 
 
-void TF_base_link_base_link_map(Point2D base_link_Point2D, Point2D *base_link_map_point2d, Pose2D base_link_origin)
-{
-	double Trans_X = (Rotation_matrix_inverse[0][0] * base_link_Point2D.x) + (Rotation_matrix_inverse[0][1] * base_link_Point2D.y);
-	double Trans_Y = (Rotation_matrix_inverse[1][0] * base_link_Point2D.x) + (Rotation_matrix_inverse[1][1] * base_link_Point2D.y);
-	
-	printf("TF_base_link_base_link_map : ");
-	printf("X : %6.3lf Y :  %6.3lf  \n", Trans_X,Trans_Y);
+void TF_BaseLinkMap2BaseLink(Point2D* p_base_link_Point2d, const Point2D* kBase_link_map_point2d, const Pose2D* kBase_link_origin) {
+	Set_rotation_matrix(kBase_link_origin->theta);
+	p_base_link_Point2d->x = (g_Rotation_matrix[0][0] * kBase_link_map_point2d->x) + (g_Rotation_matrix[0][1] * kBase_link_map_point2d->y);
+	p_base_link_Point2d->y = (g_Rotation_matrix[1][0] * kBase_link_map_point2d->x) + (g_Rotation_matrix[1][1] * kBase_link_map_point2d->y);
+	printf("base_link_Point2D.x : %6.3lf\n", base_link_Point2D.x);
+	printf("base_link_Point2D.y : %6.3lf\n\n", base_link_Point2D.y);
+}
+void TF_BaseLink2BaseLinkMap(const Point2D* kBase_link_Point2d, Point2D* p_base_link_map_point2d, const Pose2D* kBase_link_origin) {
+	Set_rotation_matrix_inverse(kBase_link_origin->theta);
+	p_base_link_map_point2d->x = (g_Rotation_matrix_inverse[0][0] * kBase_link_Point2d->x) + (g_Rotation_matrix_inverse[0][1] * kBase_link_Point2d->y);
+	p_base_link_map_point2d->y = (g_Rotation_matrix_inverse[1][0] * kBase_link_Point2d->x) + (g_Rotation_matrix_inverse[1][1] * kBase_link_Point2d->y);
+	printf("p_base_link_map_Point2D.x : %6.3lf\n", base_link_map_Point2D.x);
+	printf("p_base_link_map_Point2D.y : %6.3lf\n\n", base_link_map_Point2D.y);
 }
 
-void TF_base_link_map_base_link(Point2D base_link_Point2D, Point2D* base_link_map_point2d, Pose2D base_link_origin)
-{
-	double Trans_x = (Rotation_matrix[0][0] * base_link_map_point2d->x) + (Rotation_matrix[0][1] * base_link_map_point2d->y);
-	double Trans_y = (Rotation_matrix[1][0] * base_link_map_point2d->x) + (Rotation_matrix[1][1] * base_link_map_point2d->y);
-
-	printf("TF_base_link_map_base_link : ");
-	printf("X : %6.3lf  Y: %6.3lf  \n", Trans_x, Trans_y);
-}
-
-
-int _tmain(int argc, _TCHAR* argv[])
-{
-	//angle_degree = 90;
-	//angle_radian = DEG2RAD(angle_degree);
-
+int _tmain(int argc, _TCHAR* argv[]){
 	base_link_origin.x = 0.0;
 	base_link_origin.y = 0.0;
-	base_link_origin.theta = -90;	
 
-	base_link_Point2D.x = 4.0;
-	base_link_Point2D.y = 2.0;
-	 
-	base_link_map_Point2D.x = -2.0;
-	base_link_map_Point2D.y = 4.0;
+	base_link_origin.theta = -90;
+	base_link_map_Point2D.x=-2;
+	base_link_map_Point2D.y = 4;
 
-	set_rotation_matrix(base_link_origin.theta);
-	set_rotation_matrix_inverse(base_link_origin.theta);
-	
-	TF_base_link_base_link_map(base_link_Point2D, &base_link_map_Point2D, base_link_origin);
-	TF_base_link_map_base_link(base_link_Point2D, &base_link_map_Point2D, base_link_origin);
+/*
+	printf("angle(deg) : ");
+	scanf_s("%lf", &base_link_origin.theta);
+	printf("base_link_map_Point2D.x : ");
+	scanf_s("%lf", &base_link_map_Point2D.x);
+	printf("base_link_map_Point2D.y : ");
+	scanf_s("%lf", &base_link_map_Point2D.y);
+*/
+
+	TF_BaseLinkMap2BaseLink(&base_link_Point2D, &base_link_map_Point2D, &base_link_origin);
+
+	TF_BaseLink2BaseLinkMap(&base_link_Point2D, &base_link_map_Point2D, &base_link_origin);
+
 
 	return 0;
 }
