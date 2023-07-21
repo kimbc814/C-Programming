@@ -110,7 +110,7 @@ int _tmain(int argc, _TCHAR* argv[]){
 	printf("base_link_origin.x : %6.3lf\n", base_link_origin.x);
 	printf("base_link_origin.y : %6.3lf\n\n", base_link_origin.y);
 
-	base_link_origin.theta = -90;
+	base_link_origin.theta = 90;
 	base_link_Point2D.x=1;
 	base_link_Point2D.y =-1;
 
