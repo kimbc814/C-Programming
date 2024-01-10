@@ -61,7 +61,7 @@ public:
     }
 
     void displayResults() {
-        circuit.calculateParameters();
+        calculateParameters();
         std::printf("X_L = 2 * PI * frequency * L =  %0.3lf(ohm)\n", X_L);
         std::printf("X_C =1 / (2 * PI * frequency * C) = %0.3lf(ohm)\n", X_C);
         std::printf("Z = (R^2 + (X_L -X_C)^2 )^(1/2) = %0.3lf(ohm)\n", Z);
