@@ -9,8 +9,8 @@ void main() {
 	double R = 0.0;
 	double L = 0.0;
 	double C = 0.0;
-	double frequency = 60.0;
-	double V_p = 150.0;
+	double frequency = 0.0;
+	double V_p = 0.0;
 
 	double X_L = 0.0;
 	double X_C = 0.0;
