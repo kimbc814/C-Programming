@@ -76,7 +76,7 @@ public:
 };
 
 int main() {
-    RLCircuit circuit;
+    RLC_Circuit circuit;
     
     circuit.getInput();
     circuit.displayResults();
